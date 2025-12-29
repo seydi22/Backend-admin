@@ -29,8 +29,19 @@ app.set('trust proxy', 1);
 const logMiddleware = require('./middleware/logger');
 app.use(logMiddleware);
 
+const allowedOrigins = [
+  'https://souscripteur-web.vercel.app',
+  'https://moovmoney-admin.vercel.app'
+];
+
 const corsOptions = {
-  origin: 'https://souscripteur-web.vercel.app',
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
   credentials: true,
